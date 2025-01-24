@@ -1,0 +1,654 @@
+openapi: 3.0.3
+info:
+  title: Trade Management API
+  version: 1.0.0
+  description: API для трейдинга.
+paths:
+  /api/check-referral/{user_id}/:
+    get:
+      operationId: check_referral_retrieve
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - check-referral
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/debug-referral/{user_id}/:
+    get:
+      operationId: debug_referral_retrieve
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - debug-referral
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/link-referral/:
+    post:
+      operationId: link_referral_create
+      summary: Привязка реферала
+      parameters:
+      - in: query
+        name: referrer_id
+        schema:
+          type: integer
+        description: ID реферера
+        required: true
+      - in: query
+        name: user_id
+        schema:
+          type: integer
+        description: ID пользователя
+        required: true
+      tags:
+      - Реферальная система
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Реферал успешно привязан
+        '400':
+          description: Ошибка валидации
+        '404':
+          description: Пользователь не найден
+  /api/positions/{position_id}/current-data/:
+    get:
+      operationId: positions_current_data_retrieve
+      parameters:
+      - in: path
+        name: position_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - positions
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/positions/close:
+    post:
+      operationId: positions_close_create
+      summary: Закрытие позиции
+      parameters:
+      - in: query
+        name: position_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - positions
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/positions/position:
+    post:
+      operationId: positions_position_create
+      summary: Открытие новой позиции
+      parameters:
+      - in: query
+        name: amount
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: currency
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: stop_loss
+        schema:
+          type: string
+      - in: query
+        name: take_profit
+        schema:
+          type: string
+      - in: query
+        name: type
+        schema:
+          type: string
+      - in: query
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - positions
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/positions/positions:
+    get:
+      operationId: positions_positions_retrieve
+      summary: Получение позиций пользователя
+      parameters:
+      - in: query
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - positions
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/transfers/:
+    get:
+      operationId: transfers_retrieve
+      summary: Получение истории переводов
+      parameters:
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - all
+          - received
+          - sent
+      - in: query
+        name: wallet_address
+        schema:
+          type: string
+        required: true
+      tags:
+      - transfers
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transfer'
+          description: ''
+    post:
+      operationId: transfers_create
+      summary: Создание перевода между пользователями
+      parameters:
+      - in: query
+        name: amount
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: from_wallet_address
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: status
+        schema:
+          type: string
+          default: SUCCESS
+      - in: query
+        name: to_wallet_address
+        schema:
+          type: string
+        required: true
+      tags:
+      - transfers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTransfer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AddTransfer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddTransfer'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transfer'
+          description: ''
+        '400':
+          description: Ошибка валидации
+  /api/users/{user_id}/:
+    get:
+      operationId: users_retrieve
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - users
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/users/{user_id}/claim-global-share/:
+    get:
+      operationId: users_claim_global_share_retrieve
+      description: Получение глобальных выплат
+      summary: Управление глобальными выплатами
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Реферальная система
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: users_claim_global_share_create
+      description: Выводит и прибавляет к балансу пользователя все доступные глобальные
+        выплаты
+      summary: Вывод глобальных выплат
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Реферальная система
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Успешный вывод выплат
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Ошибка сервера
+  /api/users/{user_id}/claim-payments/:
+    get:
+      operationId: users_claim_payments_retrieve
+      description: Возвращает статистику по реферальным выплатам пользователя
+      summary: Получение статистики выплат
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        description: ID пользователя
+        required: true
+      tags:
+      - Реферальная система
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Статистика выплат
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Ошибка сервера
+    post:
+      operationId: users_claim_payments_create
+      description: Выводит и прибавляет к балансу пользователя все доступные реферальные
+        выплаты
+      summary: Вывод реферальных выплат
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        description: ID пользователя
+        required: true
+      tags:
+      - Реферальная система
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Успешный вывод выплат
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Ошибка сервера
+  /api/users/{user_id}/referral-structure/:
+    get:
+      operationId: users_referral_structure_retrieve
+      description: Возвращает полное дерево рефералов пользователя с статистикой
+      summary: Получение структуры рефералов
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        description: ID пользователя
+        required: true
+      tags:
+      - Реферальная система
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: Структура рефералов
+        '404':
+          description: Пользователь не найден
+  /api/users/user:
+    get:
+      operationId: users_user_retrieve
+      description: Получение пользователя из бд
+      summary: Получение пользователя из бд
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+        description: id пользователя в телеграме
+        required: true
+      tags:
+      - users
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: user geted
+        '400':
+          description: Validation error
+    post:
+      operationId: users_user_create
+      summary: Добавление пользователя
+      parameters:
+      - in: query
+        name: avatar
+        schema:
+          type: string
+      - in: query
+        name: balance
+        schema:
+          type: string
+          default: '0.0'
+      - in: query
+        name: id
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: referer
+        schema:
+          type: string
+      - in: query
+        name: ton_wallet
+        schema:
+          type: string
+      - in: query
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/users:
+    get:
+      operationId: users_users_retrieve
+      description: полный список всех имеемых в бд пользователей
+      summary: Получение всех пользователей из бд
+      tags:
+      - users
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: list of users
+  /api/users/wallet/:
+    get:
+      operationId: users_wallet_retrieve
+      tags:
+      - users
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: users_wallet_create
+      summary: Добавление кошелька пользователю
+      parameters:
+      - in: query
+        name: user_id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: wallet_address
+        schema:
+          type: string
+        required: true
+      tags:
+      - users
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+        '404':
+          description: Пользователь не найден
+        '400':
+          description: Ошибка валидации
+components:
+  schemas:
+    AddTransfer:
+      type: object
+      properties:
+        from_wallet_address:
+          type: string
+          maxLength: 255
+        to_wallet_address:
+          type: string
+          maxLength: 255
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,8})?$
+          title: Сумма
+      required:
+      - amount
+      - from_wallet_address
+      - to_wallet_address
+    StatusEnum:
+      enum:
+      - SUCCESS
+      - FAILED
+      - PENDING
+      type: string
+      description: |-
+        * `SUCCESS` - Успешно
+        * `FAILED` - Отмена
+        * `PENDING` - В обработке
+    Transfer:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,8})?$
+          title: Сумма
+        from_wallet_address:
+          type: string
+          title: Адрес отправителя
+          maxLength: 255
+        to_wallet_address:
+          type: string
+          title: Адрес получателя
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+          title: Статус
+      required:
+      - amount
+      - created_at
+      - from_wallet_address
+      - id
+      - status
+      - to_wallet_address
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+          nullable: true
+          title: Имя пользователя
+          maxLength: 255
+        balance:
+          type: number
+          format: double
+          title: Баланс
+        avatar:
+          type: string
+          nullable: true
+          title: Аватар
+          maxLength: 255
+        ton_wallet:
+          type: string
+          nullable: true
+          title: TON кошелек
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+        total_referral_earnings:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,8})?$
+          title: Всего заработано с рефералов
+        unclaimed_earnings:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,12}(?:\.\d{0,8})?$
+          title: Неполученные реферальные
+        referrer:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          title: ID в телеграм
+          nullable: true
+      required:
+      - id
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
