@@ -12,3 +12,4 @@ telegram-admin-informer==0.1
 typing-extensions==4.7.1
 urllib3==2.0.7
 djangorestframework
+telegram-bot
